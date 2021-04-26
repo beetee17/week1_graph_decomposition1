@@ -6,12 +6,8 @@ from collections import defaultdict
 class Vertex():
     def __init__(self, index):
         self.index = index
-        self.neighbours = {}
         self.visited = False
         self.component = None
-
-    def addNeighbour(self, w):
-        self.neighbours.update({w : None})
 
 class Graph():
     def __init__(self, edges, vertices):
