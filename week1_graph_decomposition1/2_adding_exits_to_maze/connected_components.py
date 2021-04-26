@@ -1,6 +1,7 @@
 #Uses python3
 
 import sys
+from collections import defaultdict
 
 class Vertex():
     def __init__(self, index):
@@ -14,35 +15,42 @@ class Vertex():
 
 class Graph():
     def __init__(self, edges, vertices):
-        self.edges = edges
+
+        # create a dict with vertex as key and list of its neighbours as values
+        self.adj = defaultdict(list)
+
+        for (a, b) in edges:
+            self.adj[vertices[a-1]].append(vertices[b-1])
+            self.adj[vertices[b-1]].append(vertices[a-1])
+        
         self.vertices = vertices
         self.components = 0
     
-    def explore(self, V):
-        
-        V.visited = True
-        V.component = self.components
+    def explore(self, v):
 
-        for v, w in self.edges:
-            # find the edges of the vertex in question and explore its neighbour
-            if V == w:
-                if not v.visited:
-                    self.explore(v)
-            elif V == v:
-                if not w.visited:
-                    self.explore(w)
+        # pre-vist block
+        v.visited = True
+        v.component = self.components
+
+        # explore each neighbour of the vertex 
+        for neighbour in self.adj[v]:
+            if not neighbour.visited:
+                self.explore(neighbour)
+        # post-visit block
             
 
     def DFS(self):
-    
+        
         for v in self.vertices:
+            # explore each vertex (and its neighbours)
             if not v.visited:
-                # explore each component recursively
                 self.explore(v)
+                # once all neighbours of the vertex have been explored, they form a single connected component
                 self.components += 1
 
+
 def number_of_components(graph):
-    
+
     graph.DFS()
     return graph.components
 
@@ -54,11 +62,7 @@ if __name__ == '__main__':
     vertices = [Vertex(i) for i in range(n)]
 
     data = data[2:]
-    edges = list(zip(data[0:(2 * m):2], data[1:(2 * m):2]))
+    edges = list(zip(data[0:(2 * m):2], data[1:(2 * m):2])) 
 
-    adj = []
-    for (a, b) in edges:
-        adj.append([vertices[a-1], vertices[b-1]])
-
-    graph = Graph(adj, vertices)
+    graph = Graph(edges, vertices)
     print(number_of_components(graph))
